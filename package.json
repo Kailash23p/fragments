@@ -1,0 +1,34 @@
+{
+  "name": "fragments",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Fragments back-end API",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"./src/**/*.js\"",
+    "start": "node src/server.js",
+    "dev": "node --env-file=.env.debug --watch ./src/server.js",
+    "debug": "node --env-file=.env.debug --inspect=0.0.0.0:9229 --watch ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kailash23p/fragments.git"
+  },
+  "author": "Vivek Patel",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.3.0",
+    "globals": "^17.6.0",
+    "prettier": "3.8.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "pino-pretty": "^13.1.3",
+    "stoppable": "^1.1.0"
+  }
+}
