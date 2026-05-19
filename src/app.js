@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const passport = require('passport');
 
-const { author, version } = require('../package.json');
+const authenticate = require('./auth');
 const logger = require('./logger');
 const pino = require('pino-http')({
   logger,
@@ -14,18 +15,10 @@ app.use(pino);
 app.use(helmet());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache');
+passport.use(authenticate.strategy());
+app.use(passport.initialize());
 
-  res.status(200).json({
-    status: 'ok',
-    description: 'fragments service running normally',
-    author,
-    githubUrl: 'https://github.com/Kailash23p/fragments',
-    version,
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use('/', require('./routes'));
 
 app.use((req, res) => {
   res.status(404).json({
