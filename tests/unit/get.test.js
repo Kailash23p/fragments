@@ -17,4 +17,18 @@ describe('GET /v1/fragments', () => {
     expect(res.body.status).toBe('ok');
     expect(Array.isArray(res.body.fragments)).toBe(true);
   });
+
+  test('authenticated users can list created fragment ids', async () => {
+    const createRes = await request(app)
+      .post('/v1/fragments')
+      .auth('test-user1@fragments-testing.com', 'test-password1')
+      .set('Content-Type', 'text/plain')
+      .send('listed fragment');
+
+    const listRes = await request(app)
+      .get('/v1/fragments')
+      .auth('test-user1@fragments-testing.com', 'test-password1');
+
+    expect(listRes.body.fragments).toContain(createRes.body.fragment.id);
+  });
 });
