@@ -1,39 +1,38 @@
-# Dockerfile for the fragments Node.js microservice.
-# Defines instructions used by the Docker Engine to build a runnable image.
+# Multi-stage Dockerfile for the fragments Node.js microservice.
+# Stage 1 installs production dependencies; stage 2 copies only what is needed to run.
 
-# Use the same major Node version as local development (node --version).
-FROM node:22.20.0
+# Stage 1: install production node_modules in an isolated build layer.
+FROM node:22.20.0 AS dependencies
 
 LABEL maintainer="Vivek Patel"
 LABEL description="Fragments node.js microservice"
 
-# Default application port inside the container.
-ENV PORT=8080
-
-# Reduce npm log noise during image builds.
-# https://docs.npmjs.com/cli/v8/using-npm/config#loglevel
-ENV NPM_CONFIG_LOGLEVEL=warn
-
-# Disable colour output when npm runs inside Docker.
-# https://docs.npmjs.com/cli/v8/using-npm/config#color
-ENV NPM_CONFIG_COLOR=false
-
-# Application working directory inside the image.
 WORKDIR /app
 
-# Install dependencies first so Docker can cache this layer when only source changes.
 COPY package*.json ./
 
-RUN npm install
+# Install only production dependencies to keep the final image smaller.
+RUN npm ci --omit=dev
 
-# Copy application source code.
+# Stage 2: create a smaller runtime image without build tooling or dev dependencies.
+FROM node:22.20.0-slim
+
+LABEL maintainer="Vivek Patel"
+LABEL description="Fragments node.js microservice"
+
+ENV PORT=8080
+ENV NODE_ENV=production
+ENV NPM_CONFIG_LOGLEVEL=warn
+ENV NPM_CONFIG_COLOR=false
+
+WORKDIR /app
+
+# Re-use installed dependencies from the build stage instead of running npm again.
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY package*.json ./
 COPY ./src ./src
-
-# Copy test auth file needed when HTPASSWD_FILE is set (e.g. env.jest).
 COPY ./tests/.htpasswd ./tests/.htpasswd
 
-# Document the port the service listens on inside the container.
 EXPOSE 8080
 
-# Start the fragments API server.
-CMD npm start
+CMD ["npm", "start"]
