@@ -31,4 +31,24 @@ describe('GET /v1/fragments', () => {
 
     expect(listRes.body.fragments).toContain(createRes.body.fragment.id);
   });
+
+  test('authenticated users can list expanded fragment metadata', async () => {
+    const createRes = await request(app)
+      .post('/v1/fragments')
+      .auth('test-user1@fragments-testing.com', 'test-password1')
+      .set('Content-Type', 'text/plain')
+      .send('expanded fragment');
+
+    const listRes = await request(app)
+      .get('/v1/fragments?expand=1')
+      .auth('test-user1@fragments-testing.com', 'test-password1');
+
+    const fragment = listRes.body.fragments.find((item) => item.id === createRes.body.fragment.id);
+    expect(fragment).toMatchObject({
+      type: 'text/plain',
+      size: 17,
+    });
+    expect(fragment.created).toBeTruthy();
+    expect(fragment.updated).toBeTruthy();
+  });
 });

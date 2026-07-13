@@ -67,4 +67,6 @@ The health check returns JSON with the service status, author, GitHub URL, versi
 
 ## Debugging
 
-Use the included VSCode launch configuration named `Debug via npm run debug`. Set a breakpoint in `src/app.js`, start the debugger, and request <http://localhost:8080> to hit the breakpoint.
+This repo includes a VS Code launch configuration at [`.vscode/launch.json`](.vscode/launch.json). Use the configuration named **Debug via npm run debug**. Set a breakpoint in `src/app.js`, start the debugger, and request <http://localhost:8080> to hit the breakpoint.
+
+There is also an **Attach to fragments debugger** configuration if you start the server separately with `npm run debug` and want to attach to port `9229`.

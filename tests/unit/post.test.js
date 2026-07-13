@@ -23,9 +23,39 @@ describe('POST /v1/fragments', () => {
     request(app)
       .post('/v1/fragments')
       .auth(userEmail, userPassword)
-      .set('Content-Type', 'application/json')
-      .send('{"a":1}')
+      .set('Content-Type', 'image/png')
+      .send(Buffer.from('not-an-image'))
       .expect(415));
+
+  test('authenticated users can create a JSON fragment', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth(userEmail, userPassword)
+      .set('Content-Type', 'application/json')
+      .send('{"name":"test"}');
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.fragment).toMatchObject({
+      ownerId,
+      type: 'application/json',
+      size: 15,
+    });
+  });
+
+  test('authenticated users can create a markdown fragment', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth(userEmail, userPassword)
+      .set('Content-Type', 'text/markdown')
+      .send('# Heading');
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.fragment).toMatchObject({
+      ownerId,
+      type: 'text/markdown',
+      size: 9,
+    });
+  });
 
   test('authenticated users can create a plain text fragment', async () => {
     const res = await request(app)
