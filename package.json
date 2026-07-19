@@ -8,6 +8,7 @@
     "test": "jest -c jest.config.js --runInBand --",
     "coverage": "jest -c jest.config.js --runInBand --coverage",
     "install-ci-test": "npm ci && npm test",
+    "test:integration": "hurl --test --glob \"tests/integration/**/*.hurl\"",
     "lint": "eslint \"./src/**/*.js\" \"tests/**/*.js\"",
     "start": "node src/index.js",
     "dev": "node --env-file=.env.debug --watch ./src/index.js",
@@ -21,6 +22,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@orangeopensource/hurl": "^7.0.0",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
     "jest": "^30.4.2",

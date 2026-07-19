@@ -31,7 +31,8 @@ module.exports = async (req, res) => {
       return res.status(400).json(createErrorResponse(400, 'missing fragment data'));
     }
 
-    const fragment = new Fragment({ ownerId: req.user, type, size: 0 });
+    // Store the full Content-Type header (including charset when present)
+    const fragment = new Fragment({ ownerId: req.user, type: contentTypeHeader, size: 0 });
     await fragment.save();
     await fragment.setData(req.body);
 
